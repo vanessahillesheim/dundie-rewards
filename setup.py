@@ -5,5 +5,10 @@ setup(
     version="0.1.0",
     description="Reward Point System for Dunder Mifflin",
     author="Vanessa Albertina Hillesheim", 
-    packages=["dundie"],
+    packages=find_packages(),
+    entry_points={
+        "console_scripts":[
+            "dundie = dundie__main__:main"
+        ]
+    }
 )
