@@ -6,7 +6,7 @@ from .constants import PEOPLE_FILE
 @pytest.mark.unit
 @pytest.mark.high
 
-def test_load():
+def test_load(): 
     """Testando a função load"""
 
     assert len(load(PEOPLE_FILE)) == 2
