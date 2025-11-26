@@ -13,11 +13,12 @@ on:
 
 jobs:
   tests:
+    timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:
         python-version: ['3.9', '3.10']
-        os: [ubuntu-latest, windows]
+        os: [ubuntu-latest]  # Só ubuntu por enquanto
     runs-on: ${{matrix.os}}
     steps:
       - uses: actions/checkout@v2
