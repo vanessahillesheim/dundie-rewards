@@ -2,8 +2,16 @@
 
 [tool.pytest.ini_options]
 minversion = "6.0"
-addopts = "-ra -q - vv"
+addopts = "-ra -q -vv"
 testpaths = [
     "tests", 
     "integration",
+]
+
+markers = [
+    "unit: Testes unitários",
+    "integration: Testes de integração", 
+    "high: Prioridade alta",
+    "medium: Prioridade média",
+    "low: Prioridade baixa"
 ]
