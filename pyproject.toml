@@ -15,3 +15,8 @@ markers = [
     "medium: Prioridade média",
     "low: Prioridade baixa"
 ]
+
+[tool.flake8]
+exclude = [".venv", "build"]
+max-line-length = 79
+#extend-ignore = "W293"
