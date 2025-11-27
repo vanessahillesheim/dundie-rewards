@@ -8,6 +8,10 @@ virtualenv:
 lint:
 	@.venv\Scripts\python -m pflake8
 
+fmt:
+	@.venv\Scripts\isort dundie tests integration
+	@.venv\Scripts\black dundie tests integration
+
 init: virtualenv install
 
 clean:
