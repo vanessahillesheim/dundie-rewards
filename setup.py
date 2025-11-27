@@ -36,7 +36,7 @@ setup(
     long_description=read("README.md"),
     long_description_content_type="text/markdown",
     author="Vanessa Albertina Hillesheim",
-    python_requires=">=3.8", 
+    python_requires=">=3.8",
     packages=find_packages(),
     entry_points={
         "console_scripts": [

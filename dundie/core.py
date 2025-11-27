@@ -2,8 +2,9 @@
 
 import logging
 
-#configurando Logger
+# configurando Logger
 log = logging.getLogger(__name__)
+
 
 def load(filepath):
     """ler as linhas do arquivo e salvar no banco de dados"""
