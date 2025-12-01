@@ -1,29 +1,22 @@
 install: 
 	@echo "Instalando para desenvolvimento!"
-	@.venv\Scripts\pip install -e .[dev]
+	@cmd //c ".venv\Scripts\activate && pip install -e .[dev]"
 
 virtualenv:
 	@python -m venv .venv
 
-lint:
-	@.venv\Scripts\python -m pflake8
-
-fmt:
-	@.venv\Scripts\isort dundie tests integration
-	@.venv\Scripts\black dundie tests integration
-
 init: virtualenv install
 
 clean:
-	@rmdir /s /q .venv 2>nul || exit 0
-	@rmdir /s /q build 2>nul || exit 0
-	@rmdir /s /q dist 2>nul || exit 0
-	@rmdir /s /q *.egg-info 2>nul || exit 0
+	@rmdir //s //q .venv 2>nul || exit 0
+	@rmdir //s //q build 2>nul || exit 0
+	@rmdir //s //q dist 2>nul || exit 0
+	@rmdir //s //q *.egg-info 2>nul || exit 0
 
 test:
-	@.venv\Scripts\python -m pytest -v
+	@cmd //c ".venv\Scripts\pytest tests integration"
 
 watch:
-	@.venv\Scripts\ptw -- -vv -s tests
+	@cmd //c ".venv\Scripts\activate && ptw -- -vv -s tests"
 
-.PHONY: install virtualenv init clean test watch pflake8
+.PHONY: install virtualenv init clean test watch
