@@ -7,3 +7,36 @@ testpaths = [
     "tests", 
     "integration",
 ]
+
+markers = [
+    "unit: Testes unitários",
+    "integration: Testes de integração", 
+    "high: Prioridade alta",
+    "medium: Prioridade média",
+    "low: Prioridade baixa"
+]
+
+[tool.flake8]
+exclude = [".venv", "build"]
+max-line-length = 79
+#extend-ignore = "W293"
+
+[tool.black]
+line-length = 79
+target-version = ["py36", "py37"]
+exclude = '''
+/(
+      \.eggs
+    | \.git
+    | \.venv
+    | _build
+    | build
+    | dist
+    | migrations
+)/
+'''
+
+[tool.isort]
+profile = "black"
+src_paths = ["dundie", "tests", "integration"]
+multi_line_output = 3
