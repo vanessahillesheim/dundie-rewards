@@ -1,3 +1,5 @@
+#para rodar no terminal, digite: .venv\Scripts\pip install -e .[dev]
+
 install: 
 	@echo "Instalando para desenvolvimento!"
 	@cmd //c ".venv\Scripts\activate && pip install -e .[dev]"
