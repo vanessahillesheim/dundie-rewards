@@ -1,5 +1,3 @@
-#para rodar no terminal, digite: .venv\Scripts\pip install -e .[dev]
-
 install: 
 	@echo "Instalando para desenvolvimento!"
 	@cmd //c ".venv\Scripts\activate && pip install -e .[dev]"
@@ -16,9 +14,9 @@ clean:
 	@rmdir //s //q *.egg-info 2>nul || exit 0
 
 test:
-	@cmd //c ".venv\Scripts\activate && pytest"
+	@cmd //c ".venv\Scripts\pytest tests integration"
 
 watch:
-	@cmd //c ".venv\Scripts\activate\ptw -- -vv -s -tests"
+	@cmd //c ".venv\Scripts\activate && ptw -- -vv -s tests"
 
-.PHONY: install virtualenv init clean test
+.PHONY: install virtualenv init clean test watch

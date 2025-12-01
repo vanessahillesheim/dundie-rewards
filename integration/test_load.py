@@ -1,16 +1,3 @@
-<<<<<<< Updated upstream
-import pytest
-from subprocess import check_output
-
-@pytest.mark.integration
-@pytest.mark.medium
-
-def test_load():
-    """vai terar o comando load"""
-    out = check_output(["dundie", "load", "tests/assets/people.csv"]).decode("utf-8").split("\n")
-    assert len(out) == 2
-=======
-# integration/test_load.py
 from click.testing import CliRunner
 from dundie.cli import main
 import pytest
@@ -41,4 +28,4 @@ def test_load_negative_call_load_command_with_wrong_params(wrong_command):
     out = cmd.invoke(main, [wrong_command, PEOPLE_FILE])
     assert out.exit_code != 0
     assert f"No such command '{wrong_command}'." in out.output
->>>>>>> Stashed changes
+
