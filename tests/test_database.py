@@ -18,7 +18,8 @@ def test_commit_to_database():
 
     db = connect()
     assert db["people"]["joe@doe.com"] == data
-    # o arquivo gerado no teste é salvo em C:\Users\admin\AppData\Local\Temp\pytest-of-admin"
+    # o arquivo gerado no teste é salvo em 
+    # C:\Users\admin\AppData\Local\Temp\pytest-of-admin"
 
 
 @pytest.mark.unit
@@ -35,7 +36,8 @@ def test_add_person_for_the_first_time():
     assert db["balance"][pk] == 500
     assert len(db["movement"][pk]) > 0
     assert db["movement"][pk][0]["value"] == 500
-    # o arquivo gerado no teste é salvo em C:\Users\admin\AppData\Local\Temp\pytest-of-admin"
+    # o arquivo gerado no teste é salvo em 
+    # C:\Users\admin\AppData\Local\Temp\pytest-of-admin"
 
 
 @pytest.mark.unit
