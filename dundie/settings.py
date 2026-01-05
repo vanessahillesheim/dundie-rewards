@@ -1,4 +1,5 @@
 import os
+
 SMTP_HOST = "localhost"
 SMTP_PORT = 8025
 SMTP_TIMEOUT = 5

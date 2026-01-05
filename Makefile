@@ -19,4 +19,17 @@ test:
 watch:
 	@cmd //c ".venv\Scripts\activate && ptw -- -vv -s tests"
 
-.PHONY: install virtualenv init clean test watch
+# Novas regras adicionadas:
+fmt:
+	@echo "Formatando código..."
+	@cmd //c ".venv\Scripts\black dundie/ tests/"
+	@cmd //c ".venv\Scripts\isort dundie/ tests/"
+
+lint:
+	@echo "Verificando estilo de código..."
+	@cmd //c ".venv\Scripts\flake8 dundie/ tests/"
+
+check: fmt lint test
+	@echo "✓ Todas as verificações passaram!"
+
+.PHONY: install virtualenv init clean test watch fmt lint check

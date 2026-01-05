@@ -1,39 +1,44 @@
 import pytest
-from dundie.database import EMPTY_DB, connect, commit, add_person
+
+from dundie.database import EMPTY_DB, add_person, commit, connect
+
 
 @pytest.mark.unit
 def test_database_schema():
     db = connect()
     assert db.keys() == EMPTY_DB.keys()
 
+
 @pytest.mark.unit
 def test_commit_to_database():
     db = connect()
-    data = {
-        "name": "Joe Doe", 
-        "role": "Salesman", 
-        "dept": "Sales"
-    }
+    data = {"name": "Joe Doe", "role": "Salesman", "dept": "Sales"}
     db["people"]["joe@doe.com"] = data
     commit(db)
 
     db = connect()
     assert db["people"]["joe@doe.com"] == data
-    #o arquivo gerado no teste é salvo em C:\Users\admin\AppData\Local\Temp\pytest-of-admin"
+    # o arquivo gerado no teste é salvo em C:\Users\admin\AppData\Local\Temp\pytest-of-admin"
+
 
 @pytest.mark.unit
 def test_add_person_for_the_first_time():
-    pk = "testejoe@doe.com" #mudar o e-mail cada vez q rodar o test
+    pk = "1testejoe@doe.com"  # mudar o e-mail cada vez q rodar o test
     data = {"role": "Salesman", "dept": "Sales", "name": "Joe Doe"}
     db = connect()
-    _, created = add_person(db,pk, data)
+    _, created = add_person(db, pk, data)
     assert created is True
     commit(db)
 
     db = connect()
     assert db["people"][pk] == data
-    assert db["balance"][pk] ==500
-    assert len(db["movement"][pk])>0
-    assert db["movement"] [pk] [0]["value"] == 500
+    assert db["balance"][pk] == 500
+    assert len(db["movement"][pk]) > 0
+    assert db["movement"][pk][0]["value"] == 500
+    # o arquivo gerado no teste é salvo em C:\Users\admin\AppData\Local\Temp\pytest-of-admin"
 
-     #o arquivo gerado no teste é salvo em C:\Users\admin\AppData\Local\Temp\pytest-of-admin"
+
+@pytest.mark.unit
+def test_negative_add_person_invalid_email():
+    with pytest.raises(ValueError):
+        add_person({}, ".@bla", {})

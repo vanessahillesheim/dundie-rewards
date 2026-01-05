@@ -1,16 +1,49 @@
 #pyproject.toml
 
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dundie"
+version = "0.1.0"
+description = "Reward Point System for Dunder Mifflin"
+authors = [
+    {name = "Seu Nome", email = "seu@email.com"}
+]
+readme = "README.md"  # Adicione esta linha
+dependencies = [
+    "typer>=0.12.0",
+    "rich-click>=1.7",
+    "pymailtm>=1.1.2",
+]
+requires-python = ">=3.8"
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=6.0",
+    "pytest-xdist>=3.0",
+    "pytest-forked>=1.6",
+    "ptw>=1.15",
+    "flake8>=6.0",
+    "black>=24.0",
+    "isort>=5.12",
+]
+
+[project.scripts]
+dundie = "dundie.__main__:main"
+
 [tool.pytest.ini_options]
 minversion = "6.0"
 addopts = "-ra -q -vv"
 testpaths = [
-    "tests", 
+    "tests",
     "integration",
 ]
 
 markers = [
     "unit: Testes unitários",
-    "integration: Testes de integração", 
+    "integration: Testes de integração",
     "high: Prioridade alta",
     "medium: Prioridade média",
     "low: Prioridade baixa"
