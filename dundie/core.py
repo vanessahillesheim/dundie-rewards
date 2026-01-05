@@ -24,7 +24,7 @@ def load(filepath):
         person_data = dict(zip(headers, [item.strip() for item in line]))
         pk = person_data.pop("email")
         person, created = add_person(db, pk, person_data)
-        #return_data = person.copy()
+        # return_data = person.copy()
         person["created"] = created
         person["email"] = pk
         people.append(person)
