@@ -1,10 +1,12 @@
 import json
 from datetime import datetime
+
 from dundie.settings import DATABASE_PATH, EMAIL_FROM
 from dundie.utils.email import check_valid_email, send_email
 from dundie.utils.user import generate_simple_password
 
-EMPTY_DB = {"people": {}, "balance": {}, "movement": {},  "users": {}}
+EMPTY_DB = {"people": {}, "balance": {}, "movement": {}, "users": {}}
+
 
 def connect() -> dict:  # vai ler o arquivo csv e retornar um dicionário python
     """Conecta o banco de dados e retorna um dicionário"""
@@ -13,7 +15,8 @@ def connect() -> dict:  # vai ler o arquivo csv e retornar um dicionário python
             return json.loads(database_file.read())
     except (json.JSONDecodeError, FileNotFoundError):
         return EMPTY_DB
-    
+
+
 def commit(db):
     """Faz update das alterações"""
     if db.keys() != EMPTY_DB.keys():
@@ -21,6 +24,7 @@ def commit(db):
 
     with open(DATABASE_PATH, "w") as database_file:
         database_file.write(json.dumps(db, indent=4))
+
 
 def add_person(db, pk, data):
     """Salvar usuários no banco de dados
@@ -39,29 +43,30 @@ def add_person(db, pk, data):
     table[pk] = person
     if created:
         set_initial_balance(db, pk, person)
-        password = generate_simple_password()  # CORREÇÃO: faltava os parênteses
+        password = set_initial_password(db, pk)
         send_email(EMAIL_FROM, pk, "Your dundie password:", password)
         # TODO encrypt and send only link not password
     return person, created
 
+
 def set_initial_password(db, pk):
     """Gera e salva senhas"""
-    db["users"].setdefault(pk, ())
+    db["users"].setdefault(pk, {})
     db["users"][pk]["password"] = generate_simple_password(8)
     return db["users"][pk]["password"]
+
 
 def set_initial_balance(db, pk, person):
     """Add movement and set initial balance"""
     value = 100 if person["role"] == "Manager" else 500
     add_movement(db, pk, value)
 
+
 def add_movement(db, pk, value, actor="system"):
-    movements = db["movement"].setdefault(pk, [])  # CORREÇÃO: estava db["movement"][pk].setdefault
+    movements = db["movement"].setdefault(
+        pk, []
+    )  # CORREÇÃO: estava db["movement"][pk].setdefault
     movements.append(
-        {
-            "date": datetime.now().isoformat(), 
-            "actor": actor, 
-            "value": value
-        }
+        {"date": datetime.now().isoformat(), "actor": actor, "value": value}
     )
     db["balance"][pk] = sum([item["value"] for item in movements])
