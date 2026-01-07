@@ -2,7 +2,7 @@
     "people": {
         "jim@dundermifflin.com": {
             "name": "Jim Halpert",
-            "dept": "Sale",
+            "dept": "Sales",
             "role": "Salesman",
             "created": false,
             "email": "jim@dundermifflin.com"
@@ -23,7 +23,7 @@
         }
     },
     "balance": {
-        "jim@dundermifflin.com": 500,
+        "jim@dundermifflin.com": 450,
         "schrute@dundermifflin.com": 100,
         "glewis@dundermifflin.com": 100
     },
@@ -33,6 +33,31 @@
                 "date": "2026-01-05T09:01:11.260849",
                 "actor": "system",
                 "value": 500
+            },
+            {
+                "date": "2026-01-07T08:58:46.836678",
+                "actor": null,
+                "value": 50
+            },
+            {
+                "date": "2026-01-07T09:07:02.827181",
+                "actor": null,
+                "value": -50
+            },
+            {
+                "date": "2026-01-07T09:07:17.533075",
+                "actor": null,
+                "value": -50
+            },
+            {
+                "date": "2026-01-07T09:10:02.255433",
+                "actor": null,
+                "value": 50
+            },
+            {
+                "date": "2026-01-07T09:10:10.251078",
+                "actor": null,
+                "value": -50
             }
         ],
         "schrute@dundermifflin.com": [
@@ -40,6 +65,36 @@
                 "date": "2026-01-05T09:01:15.359089",
                 "actor": "system",
                 "value": 100
+            },
+            {
+                "date": "2026-01-07T08:58:04.994282",
+                "actor": null,
+                "value": 50
+            },
+            {
+                "date": "2026-01-07T08:58:46.836704",
+                "actor": null,
+                "value": 50
+            },
+            {
+                "date": "2026-01-07T09:07:02.827209",
+                "actor": null,
+                "value": -50
+            },
+            {
+                "date": "2026-01-07T09:07:17.533101",
+                "actor": null,
+                "value": -50
+            },
+            {
+                "date": "2026-01-07T09:10:02.255462",
+                "actor": null,
+                "value": 50
+            },
+            {
+                "date": "2026-01-07T09:10:10.251111",
+                "actor": null,
+                "value": -50
             }
         ],
         "glewis@dundermifflin.com": [
