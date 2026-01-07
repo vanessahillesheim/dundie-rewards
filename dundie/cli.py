@@ -1,9 +1,8 @@
 # interface com o usuário
 import json
 import os
-from importlib.metadata import version
+from importlib.metadata import version  # Mantenha apenas esta importação
 
-import pkg_resources
 import rich_click as click
 from rich.console import Console
 from rich.table import Table
@@ -20,7 +19,7 @@ click.rich_click.APPEND_METAVARS_HELP = True
 
 # para rodar o arquivo, no terminal digitar: dundie load assets/people.csv
 @click.group()
-@click.version_option(pkg_resources.get_distribution("dundie").version)
+@click.version_option(version("dundie"))
 def main():
     """
     Dunder Mifflin Rewards System.
@@ -78,8 +77,8 @@ def show(output, **query):
         click.echo(f"Arquivo salvo em: {output_path}")
 
     if not result:
-        print("Nothing to show.")
-
+        click.echo("Nothing to show.")
+        return
     # para visualizar os pontos de cada usuário/dpto
     table = Table(title="Dunder Mifflin Report")
     for key in result[0]:
