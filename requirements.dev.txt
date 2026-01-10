@@ -11,6 +11,9 @@ pyproject-flake8
 black
 isort
 
+# Docs
+mkdocsm
+
 # Install project as editable
 -e .
 

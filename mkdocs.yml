@@ -1,0 +1,16 @@
+site_name: Dundie Rewards CLI
+site_description: Sistema de Pontos de Recompensa para Dunder Mifflin
+site_author: Vanessa A. Hillesheim
+
+#theme:
+ #name: readthedocs
+
+site_url: https://vanessahillesheim.github.io/dundie-rewards/
+repo_url: https://github.com/vanessahillesheim/dundie-rewards
+repo_name: dundie-rewards
+
+nav:
+  - Home: index.md
+  - Installation: how_to_install.md
+  - How to Use: how_to_use.md
+  - Roadmap: roadmap.md 

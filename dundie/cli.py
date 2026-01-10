@@ -24,14 +24,19 @@ def main():
     """
     Dunder Mifflin Rewards System.
 
-    This cli application controls DM rewards.
+    Este aplicativo CLI controla as recompensas da DM.
+
+    * administradores podem carregar informações no banco de dados de pessoas
+     e atribuir pontos.
+    * usuário pode visualizar relatórios e transferência de pontos.
+
     """
 
 
 @main.command()
 @click.argument("filepath", type=click.Path(exists=True))
 def load(filepath):
-    """Loads the file to the database.
+    """Carrega o arquivo no banco de dados.
 
     ## Features
     - Validates data
@@ -60,7 +65,7 @@ def load(filepath):
 @click.option("--email", required=False)
 @click.option("--output", default=None)
 def show(output, **query):
-    """Mostras as informações dos usuários"""
+    """Mostra as informações dos usuários/depto"""
     result = core.read(**query)
 
     # dundie show --output="C:\temp\balanco.json"
@@ -112,6 +117,6 @@ def add(ctx, value, **query):
 @click.option("--email", required=False)
 @click.pass_context
 def remove(ctx, value, **query):
-    """Adiciona pontos aos usuários/depto"""
+    """Remove pontos aos usuários/depto"""
     core.add(-value, **query)
     ctx.invoke(show, **query)
