@@ -12,7 +12,7 @@ black
 isort
 
 # Docs
-mkdocsm
+mkdocs
 
 # build
 wheel
