@@ -12,7 +12,10 @@ black
 isort
 
 # Docs
-mkdocsm
+mkdocs
+
+# build
+wheel
 
 # Install project as editable
 -e .

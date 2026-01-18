@@ -36,7 +36,7 @@ def main():
 @main.command()
 @click.argument("filepath", type=click.Path(exists=True))
 def load(filepath):
-    """Carrega o arquivo no banco de dados.
+    """Carrega o arquivo do banco de dados.
 
     ## Features
     - Validates data

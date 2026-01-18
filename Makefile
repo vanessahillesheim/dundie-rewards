@@ -32,4 +32,7 @@ lint:
 check: fmt lint test
 	@echo "✓ Todas as verificações passaram!"
 
-.PHONY: install virtualenv init clean test watch fmt lint check
+build:
+	@python setup.py sdist bdist_wheel
+
+.PHONY: install virtualenv init clean test watch fmt lint check python setup.py sdist bdist_wheel
