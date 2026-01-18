@@ -19,7 +19,7 @@ click.rich_click.APPEND_METAVARS_HELP = True
 
 # para rodar o arquivo, no terminal digitar: dundie load assets/people.csv
 @click.group()
-@click.version_option(version("dundie"))
+@click.version_option("0.1.2")
 def main():
     """
     Dunder Mifflin Rewards System.
@@ -36,7 +36,7 @@ def main():
 @main.command()
 @click.argument("filepath", type=click.Path(exists=True))
 def load(filepath):
-    """Carrega o arquivo no banco de dados.
+    """Carrega o arquivo do banco de dados.
 
     ## Features
     - Validates data

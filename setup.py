@@ -25,15 +25,17 @@ def read_requirements(path):
     ]
 
 setup(
-    name="dundie",
-    version="0.1.0",
+    name="vanessa-hillesheim-dundie",
+    # Major.Minor.Patch
+    # X.Y.Z
+    version="0.1.2",
     description="Reward Point System for Dunder Mifflin",
     long_description=read("README.md"),
     long_description_content_type="text/markdown",
     author="Your Name",
     author_email="your.email@example.com",
     url="https://github.com/yourusername/dundie",
-    packages=find_packages(exclude=["tests", "tests.*"]),
+    packages=find_packages(exclude=["integration"]),
     include_package_data=True,
     install_requires=read_requirements("requirements.txt"),
     extras_require={
