@@ -4,6 +4,7 @@
 import os
 from setuptools import setup, find_packages
 
+
 def read(*paths):
     """Read the contents of a text file safely.
     >>> read("dundie", "VERSION")
@@ -16,6 +17,7 @@ def read(*paths):
     with open(filepath, encoding='utf-8') as file_:
         return file_.read().strip()
 
+
 def read_requirements(path):
     """Return a list of requirements from a text file"""
     return [
@@ -23,6 +25,7 @@ def read_requirements(path):
         for line in read(path).split("\n")
         if not line.startswith(("#", "git+", '"', '-'))
     ]
+
 
 setup(
     name="vanessa-hillesheim-dundie",
