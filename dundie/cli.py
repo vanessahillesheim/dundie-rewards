@@ -19,7 +19,7 @@ click.rich_click.APPEND_METAVARS_HELP = True
 
 # para rodar o arquivo, no terminal digitar: dundie load assets/people.csv
 @click.group()
-@click.version_option("0.1.2")
+@click.version_option(version("dundie"))
 def main():
     """
     Dunder Mifflin Rewards System.
