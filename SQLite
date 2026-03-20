@@ -1,0 +1,14 @@
+-- SQLite
+-- INSERT INTO person (name, email, dept, role)
+-- VALUES ('Vanessa', "vanessa@hotmail.com", "Sales", "Saleswoman")
+
+-- para executar o comando CTRL+SHIFT+Q
+
+-- SELECT name, email FROM person;
+-- SELECT value FROM balance;
+SELECT person.name, person.email, balance.value
+FROM person
+LEFT join balance
+WHERE person.id = balance.person
+
+
