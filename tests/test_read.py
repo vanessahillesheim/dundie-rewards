@@ -1,43 +1,68 @@
 import pytest
+from sqlmodel import select
 
 from dundie.core import read
-from dundie.database import add_person, commit, connect
+from dundie.database import get_session
+from dundie.models import Person, Balance, Movement
+from dundie.utils.db import add_person
 
 
 @pytest.mark.unit
 def test_read_with_query():
-    db = connect()
-
     # PRIMEIRO: Limpa dados problemáticos de testes anteriores
     problematic_emails = [
-        "test_commit_joe@doe.com",  # De test_commit_to_database
-        "1testejoe@doe.com",  # De test_add_person_for_the_first_time
-        "jim@dundermifflin.com",  # De test_load.py
-        "schrute@dundermifflin.com",  # De test_load.py
-        "glewis@dundermifflin.com",  # De test_load.py
+        "test_commit_joe@doe.com",
+        "1testejoe@doe.com",
+        "jim@dundermifflin.com",
+        "schrute@dundermifflin.com",
+        "glewis@dundermifflin.com",
     ]
-
-    for email in problematic_emails:
-        for key in ["people", "balance", "movement", "users"]:
-            if email in db[key]:
-                del db[key][email]
-
-    commit(db)
+    
+    with get_session() as session:
+        for email in problematic_emails:
+            person = session.exec(
+                select(Person).where(Person.email == email)
+            ).first()
+            if person:
+                if person.balance:
+                    session.delete(person.balance)
+                if person.user:
+                    session.delete(person.user)
+                movements = session.exec(
+                    select(Movement).where(Movement.person_id == person.id)
+                ).all()
+                for mov in movements:
+                    session.delete(mov)
+                session.delete(person)
+        session.commit()
 
     # AGORA: Teste normal com emails únicos
-    db = connect()
-
-    pk = "test_read_joe@doe.com"
-    data = {"role": "Salesman", "dept": "Sales", "name": "Joe Doe"}
-    _, created = add_person(db, pk, data)
-    assert created is True
-    commit(db)
-
-    pk = "test_read_jim@doe.com"
-    data = {"role": "Manager", "dept": "Management", "name": "Jim Doe"}
-    _, created = add_person(db, pk, data)
-    assert created is True
-    commit(db)
+    with get_session() as session:
+        # Adiciona Joe Doe
+        joe_data = {
+            "name": "Joe Doe",
+            "dept": "Sales",
+            "role": "Salesman",
+            "email": "test_read_joe@doe.com",
+            "currency": "USD"
+        }
+        joe_person = Person(**joe_data)
+        _, created = add_person(session, joe_person)
+        assert created is True
+        
+        # Adiciona Jim Doe
+        jim_data = {
+            "name": "Jim Doe",
+            "dept": "Management",
+            "role": "Manager",
+            "email": "test_read_jim@doe.com",
+            "currency": "USD"
+        }
+        jim_person = Person(**jim_data)
+        _, created = add_person(session, jim_person)
+        assert created is True
+        
+        session.commit()
 
     response = read()
     assert len(response) == 2

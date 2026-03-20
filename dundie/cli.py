@@ -1,7 +1,7 @@
 # interface com o usuário
 import json
 import os
-from importlib.metadata import version  # Mantenha apenas esta importação
+from importlib.metadata import version  # ✅ Apenas esta importação
 
 import rich_click as click
 from rich.console import Console
@@ -17,7 +17,6 @@ click.rich_click.SHOW_METAVARS_COLUMN = False
 click.rich_click.APPEND_METAVARS_HELP = True
 
 
-# para rodar o arquivo, no terminal digitar: dundie load assets/people.csv
 @click.group()
 @click.version_option(version("dundie"))
 def main():
@@ -29,37 +28,47 @@ def main():
     * administradores podem carregar informações no banco de dados de pessoas
      e atribuir pontos.
     * usuário pode visualizar relatórios e transferência de pontos.
-
     """
 
 
 @main.command()
 @click.argument("filepath", type=click.Path(exists=True))
 def load(filepath):
-    """Carrega o arquivo do banco de dados.
-
-    ## Features
-    - Validates data
-    - Parses the file
-    - Loads to database
-    """
+    """Carrega o arquivo do banco de dados."""
     table = Table(title="Dunder Mifflin Associates")
-    headers = ["name", "dpto", "role", "created", "e-mail"]
-    for header in headers:
-        table.add_column(header, style="magenta")
+    
+    # Headers na MESMA ordem do return_data em core.load()
+    # E com os nomes bonitos para exibição
+    headers_order = ["name", "dept", "role", "email", "currency", "created"]
+    display_headers = {
+        "name": "Name",
+        "dept": "Department",
+        "role": "Role",
+        "email": "E-mail",
+        "currency": "Currency",
+        "created": "Created"
+    }
+    
+    for header in headers_order:
+        table.add_column(display_headers[header], style="magenta")
 
     result = core.load(filepath)
     for person in result:
-        table.add_row(*[str(value) for value in person.values()])
+        # Construir a linha na ordem exata dos headers_order
+        row = [
+            str(person.get("name", "")),
+            str(person.get("dept", "")),
+            str(person.get("role", "")),
+            str(person.get("email", "")),
+            str(person.get("currency", "USD")),
+            str(person.get("created", ""))
+        ]
+        table.add_row(*row)
 
     console = Console()
     console.print(table)
 
 
-# para expor a tabela de pontos de um usuário já cadastrado, no terminal:
-# dundie show --email=jim@dundermifflin.com
-# dundie show  -> aparecem todos os usuários cadastrados
-# dundie show --dept=Sale  -> apenas usuário do depto Sale
 @main.command()
 @click.option("--dept", required=False)
 @click.option("--email", required=False)
@@ -68,8 +77,6 @@ def show(output, **query):
     """Mostra as informações dos usuários/depto"""
     result = core.read(**query)
 
-    # dundie show --output="C:\temp\balanco.json"
-    # o comando acima vai gerar um arquivo json com o balanço dos pontos
     if output:
         # Garante que os diretórios existam
         output_path = os.path.abspath(output)
@@ -78,39 +85,38 @@ def show(output, **query):
             os.makedirs(directory, exist_ok=True)
 
         with open(output_path, "w", encoding="utf-8") as output_file:
-            json.dump(result, output_file, indent=2)
+            json.dump(result, output_file, indent=2, ensure_ascii=False)
         click.echo(f"Arquivo salvo em: {output_path}")
 
     if not result:
         click.echo("Nothing to show.")
         return
+    
     # para visualizar os pontos de cada usuário/dpto
     table = Table(title="Dunder Mifflin Report")
     for key in result[0]:
         table.add_column(key.title(), style="magenta")
 
     for person in result:
-        table.add_row(*[str(value) for value in person.values()])
+        # Converte None para string vazia para evitar erros
+        row = [str(value) if value is not None else "" for value in person.values()]
+        table.add_row(*row)
 
     console = Console()
     console.print(table)
 
 
-# para adicionar pontos ao depto "sales", digitar no terminal:
-# dundie add 50 --dept=Sales
 @main.command()
 @click.argument("value", type=click.INT, required=True)
 @click.option("--dept", required=False)
 @click.option("--email", required=False)
-@click.pass_context  # context vai gerar o show para mostrar balanço atualizado
+@click.pass_context
 def add(ctx, value, **query):
     """Adiciona pontos aos usuários/depto"""
     core.add(value, **query)
     ctx.invoke(show, **query)
 
 
-# para remover pontos ao depto "sales", digitar no terminal:
-# dundie remove 50 --dept=Sales
 @main.command()
 @click.argument("value", type=click.INT, required=True)
 @click.option("--dept", required=False)

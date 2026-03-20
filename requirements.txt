@@ -2,3 +2,7 @@ click
 rich
 rich-click
 pwdlib
+pydantic
+sqlmodel
+alembic
+httpx

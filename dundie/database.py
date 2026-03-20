@@ -1,76 +1,25 @@
-import json
-from datetime import datetime
+import warnings
 
-from dundie.settings import DATABASE_PATH, EMAIL_FROM
-from dundie.utils.email import check_valid_email, send_email
-from dundie.utils.user import generate_simple_password
+from sqlalchemy.exc import SAWarning
+from sqlmodel import Session, create_engine
 
-EMPTY_DB = {"people": {}, "balance": {}, "movement": {}, "users": {}}
+# We have to monkey patch this attributes
+# https://github.com/tiangolo/sqlmodel/issues/189
+from sqlmodel.sql.expression import Select, SelectOfScalar
 
+from dundie import models
+from dundie.settings import SQL_CON_STRING
 
-def connect() -> dict:  # vai ler o arquivo csv e retornar um dicionário python
-    """Conecta o banco de dados e retorna um dicionário"""
-    try:
-        with open(DATABASE_PATH, "r") as database_file:
-            return json.loads(database_file.read())
-    except (json.JSONDecodeError, FileNotFoundError):
-        return EMPTY_DB
+# ^ IMPORTANTE importar todos os models para este contexto
 
+warnings.filterwarnings("ignore", category=SAWarning)
 
-def commit(db):
-    """Faz update das alterações"""
-    if db.keys() != EMPTY_DB.keys():
-        raise RecursionError("Database Schema is invalid!")
+SelectOfScalar.inherit_cache = True  # type: ignore
+Select.inherit_cache = True  # type: ignore
 
-    with open(DATABASE_PATH, "w") as database_file:
-        database_file.write(json.dumps(db, indent=4))
+engine = create_engine(SQL_CON_STRING, echo=False)
+models.SQLModel.metadata.create_all(bind=engine)
 
 
-def add_person(db, pk, data):
-    """Salvar usuários no banco de dados
-    - email é chave primária unica (pk = primary key)
-    - se email já existir = update, senão, cria novo usuário
-    - faz o balanço das recompensas (managers = 100, others = 500)
-    - gera a senha para novo usuário
-    """
-    if not check_valid_email(pk):
-        raise ValueError(f"{pk} não é um email válido!")
-
-    table = db["people"]
-    person = table.get(pk, {})
-    created = not bool(person)
-    person.update(data)
-    table[pk] = person
-    if created:
-        set_initial_balance(db, pk, person)
-        password = set_initial_password(db, pk)
-        send_email(EMAIL_FROM, pk, "Your dundie password:", password)
-        # TODO encrypt and send only link not password
-    return person, created
-
-
-def set_initial_password(db, pk):
-    """Gera e salva senhas"""
-    db["users"].setdefault(pk, {})
-    db["users"][pk]["password"] = generate_simple_password(8)
-    return db["users"][pk]["password"]
-
-
-def set_initial_balance(db, pk, person):
-    """Add movement and set initial balance"""
-    value = 100 if person["role"] == "Manager" else 500
-    add_movement(db, pk, value)
-
-
-def add_movement(db, pk, value, actor="system"):
-    """Adds movements to user account.
-    Example::
-        add_movement(db, "me@me.com", 100, "me")
-    """
-    movements = db["movement"].setdefault(
-        pk, []
-    )  # CORREÇÃO: estava db["movement"][pk].setdefault
-    movements.append(
-        {"date": datetime.now().isoformat(), "actor": actor, "value": value}
-    )
-    db["balance"][pk] = sum([item["value"] for item in movements])
+def get_session() -> Session:
+    return Session(engine)
