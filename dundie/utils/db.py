@@ -1,9 +1,10 @@
+from typing import Optional
+
 from sqlmodel import Session, select
-from dundie.models import Person, User, Balance, Movement
+
+from dundie.models import Balance, Movement, Person, User
 from dundie.settings import EMAIL_FROM
 from dundie.utils.email import send_email
-from typing import Optional
-import os
 
 
 def add_person(session: Session, instance: Person):
@@ -14,7 +15,7 @@ def add_person(session: Session, instance: Person):
         select(Person).where(Person.email == instance.email)
     ).first()
     created = existing is None
-    
+
     if created:
         session.add(instance)
         session.flush()  # Garante ID
@@ -44,10 +45,11 @@ def set_initial_balance(session: Session, person: Person):
 
 
 def add_movement(
-        session: Session, 
-        person: Person, 
-        value: int, 
-        actor: Optional[str] = "system"):
+    session: Session,
+    person: Person,
+    value: int,
+    actor: Optional[str] = "system",
+):
     """
     Adiciona movimento para usuário.
     """
@@ -56,34 +58,30 @@ def add_movement(
         # Garantir que actor nunca seja None
         if actor is None:
             actor = "system"
-        
+
         # Verificar se person está na sessão
         if person not in session:
             person = session.merge(person)
-        
+
         # Criar movimento (usando person_id em vez do objeto person)
-        movement = Movement(
-            person_id=person.id,
-            value=value,
-            actor=actor
-        )
+        movement = Movement(person_id=person.id, value=value, actor=actor)
         session.add(movement)
-        
+
         # 🔥 Importante: flush apenas do movimento, não de tudo
         session.flush([movement])
-        
+
         # Agora consultar movements com segurança
         movements = session.exec(
             select(Movement).where(Movement.person_id == person.id)
         ).all()
-        
+
         total = sum(mov.value for mov in movements)
-        
+
         # Atualizar balance
         existing_balance = session.exec(
             select(Balance).where(Balance.person_id == person.id)
         ).first()
-        
+
         if existing_balance:
             existing_balance.value = total
             session.add(existing_balance)

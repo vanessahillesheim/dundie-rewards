@@ -36,7 +36,7 @@ def main():
 def load(filepath):
     """Carrega o arquivo do banco de dados."""
     table = Table(title="Dunder Mifflin Associates")
-    
+
     # Headers na MESMA ordem do return_data em core.load()
     # E com os nomes bonitos para exibição
     headers_order = ["name", "dept", "role", "email", "currency", "created"]
@@ -46,9 +46,9 @@ def load(filepath):
         "role": "Role",
         "email": "E-mail",
         "currency": "Currency",
-        "created": "Created"
+        "created": "Created",
     }
-    
+
     for header in headers_order:
         table.add_column(display_headers[header], style="magenta")
 
@@ -61,7 +61,7 @@ def load(filepath):
             str(person.get("role", "")),
             str(person.get("email", "")),
             str(person.get("currency", "USD")),
-            str(person.get("created", ""))
+            str(person.get("created", "")),
         ]
         table.add_row(*row)
 
@@ -91,7 +91,7 @@ def show(output, **query):
     if not result:
         click.echo("Nothing to show.")
         return
-    
+
     # para visualizar os pontos de cada usuário/dpto
     table = Table(title="Dunder Mifflin Report")
     for key in result[0]:
@@ -99,7 +99,10 @@ def show(output, **query):
 
     for person in result:
         # Converte None para string vazia para evitar erros
-        row = [str(value) if value is not None else "" for value in person.values()]
+        row = [
+            str(value) if value is not None else ""
+            for value in person.values()
+        ]
         table.add_row(*row)
 
     console = Console()

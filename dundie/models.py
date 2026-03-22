@@ -1,15 +1,18 @@
+# dundie/models.py
 from datetime import datetime
 from typing import Optional
 
-from sqlmodel import SQLModel, Field, Relationship
-from pydantic import field_validator, condecimal, ConfigDict
+from pydantic import ConfigDict, condecimal, field_validator
+from sqlmodel import Field, Relationship, SQLModel
 
 from dundie.utils.email import check_valid_email
 from dundie.utils.user import generate_simple_password
 
 
 class InvalidEmailError(Exception):
-    ...
+    """Exceção para email inválido"""
+    pass
+
 
 class Person(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True, index=True)
@@ -41,7 +44,7 @@ class Balance(SQLModel, table=True):
     value: condecimal(decimal_places=3) = Field(default=0)
 
     person: Person = Relationship(back_populates="balance")
-    
+
     model_config = ConfigDict(from_attributes=True)
 
 
@@ -53,7 +56,7 @@ class Movement(SQLModel, table=True):
     date: datetime = Field(default_factory=lambda: datetime.now())
 
     person: Person = Relationship(back_populates="movement")
-    
+
     model_config = ConfigDict(from_attributes=True)
 
 
@@ -63,5 +66,5 @@ class User(SQLModel, table=True):
     password: str = Field(default_factory=generate_simple_password)
 
     person: Person = Relationship(back_populates="user")
-    
+
     model_config = ConfigDict(from_attributes=True)

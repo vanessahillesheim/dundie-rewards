@@ -3,7 +3,7 @@ from sqlmodel import select
 
 from dundie.core import read
 from dundie.database import get_session
-from dundie.models import Person, Balance, Movement
+from dundie.models import Movement, Person
 from dundie.utils.db import add_person
 
 
@@ -17,7 +17,7 @@ def test_read_with_query():
         "schrute@dundermifflin.com",
         "glewis@dundermifflin.com",
     ]
-    
+
     with get_session() as session:
         for email in problematic_emails:
             person = session.exec(
@@ -44,24 +44,24 @@ def test_read_with_query():
             "dept": "Sales",
             "role": "Salesman",
             "email": "test_read_joe@doe.com",
-            "currency": "USD"
+            "currency": "USD",
         }
         joe_person = Person(**joe_data)
         _, created = add_person(session, joe_person)
         assert created is True
-        
+
         # Adiciona Jim Doe
         jim_data = {
             "name": "Jim Doe",
             "dept": "Management",
             "role": "Manager",
             "email": "test_read_jim@doe.com",
-            "currency": "USD"
+            "currency": "USD",
         }
         jim_person = Person(**jim_data)
         _, created = add_person(session, jim_person)
         assert created is True
-        
+
         session.commit()
 
     response = read()

@@ -5,7 +5,7 @@ from sqlmodel import select
 
 from dundie.core import load
 from dundie.database import get_session
-from dundie.models import Person, Balance, Movement
+from dundie.models import Movement, Person
 
 from .constants import PEOPLE_FILE
 
@@ -29,7 +29,7 @@ def test_load_positive_has_3_people():
                 session.delete(mov)
             session.delete(person)
         session.commit()
-    
+
     assert len(load(PEOPLE_FILE)) == 3
 
 
@@ -52,5 +52,5 @@ def test_load_positive_first_name_starts_with_j():
                 session.delete(mov)
             session.delete(person)
         session.commit()
-    
+
     assert load(PEOPLE_FILE)[0]["name"] == "Jim Halpert"
