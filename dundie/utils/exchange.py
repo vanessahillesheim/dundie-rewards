@@ -50,17 +50,13 @@ def get_rates(currencies: List[str]) -> Dict[str, USDRate]:
                             f"{list(data.keys())}"
                         )
                         return_data[currency] = USDRate(
-                            name="api/error",
-                            high=0
+                            name="api/error", high=0
                         )
                 else:
                     log.error(
                         f"Erro HTTP {response.status_code} para {currency}"
                     )
-                    return_data[currency] = USDRate(
-                        name="api/error",
-                        high=0
-                    )
+                    return_data[currency] = USDRate(name="api/error", high=0)
 
             except Exception as e:
                 log.error(f"Erro ao buscar taxa para {currency}: {e}")

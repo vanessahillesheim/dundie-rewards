@@ -11,6 +11,7 @@ from dundie.utils.user import generate_simple_password
 
 class InvalidEmailError(Exception):
     """Exceção para email inválido"""
+
     pass
 
 
