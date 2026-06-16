@@ -1,6 +1,6 @@
 [flake8]
 max-line-length = 120
-ignore = E402, F401, F841, F541, W292, W293, F811, E501
+ignore = E402, F401, F841, F541, W292, W293, F811
 exclude =
     .git,
     __pycache__,
@@ -11,4 +11,8 @@ exclude =
     scripts,
     integration,
     tests/assets/unit,
-    .venv
+    sql_example.py,
+    sqla_example.py,
+    sqlmodel_example.py,
+    .eggs,
+    *.egg-info
