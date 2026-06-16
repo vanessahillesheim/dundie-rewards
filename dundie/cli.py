@@ -6,20 +6,20 @@ from typing import Optional
 import click
 from dotenv import load_dotenv
 from rich.console import Console
-from rich.table import Table
 from rich.panel import Panel
+from rich.table import Table
 from rich.text import Text
 
-from dundie.core import add, read, load, transfer, get_balance, get_statement
+from dundie.core import add, get_balance, get_statement, load, read, transfer
 from dundie.utils.auth import (
+    admin_required,
     authenticate,
     check_admin_role,
     get_current_user,
     login_required,
-    admin_required,
     require_password_verification,
 )
-from dundie.utils.session import save_session, load_session, clear_session, get_session_email
+from dundie.utils.session import clear_session, get_session_email, load_session, save_session
 from dundie.utils.user import set_initial_password
 
 # Carrega variáveis de ambiente

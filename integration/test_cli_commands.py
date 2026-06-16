@@ -1,13 +1,14 @@
 import os
+
 import pytest
 from click.testing import CliRunner
 from sqlmodel import select
 
 from dundie.cli import main
 from dundie.database import get_session
-from dundie.models import Person, User, Balance, Movement
-from dundie.utils.user import get_password_hash
+from dundie.models import Balance, Movement, Person, User
 from dundie.utils.db import add_person, set_initial_balance
+from dundie.utils.user import get_password_hash
 
 cmd = CliRunner()
 

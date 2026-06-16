@@ -117,7 +117,7 @@ def test_get_balance():
 @pytest.mark.unit
 def test_get_statement():
     """Testa função get_statement"""
-    from dundie.core import get_statement, add
+    from dundie.core import add, get_statement
 
     unique_email = "test_statement_read@doe.com"
 

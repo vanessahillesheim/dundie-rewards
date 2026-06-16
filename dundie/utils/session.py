@@ -1,8 +1,8 @@
 # dundie/utils/session.py
 """Gerenciamento de sessão do usuário"""
 
-import os
 import json
+import os
 from pathlib import Path
 
 SESSION_FILE = Path.home() / ".dundie_session"

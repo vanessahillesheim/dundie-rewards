@@ -157,8 +157,10 @@ def add(value: int, **query: Query):
 # Adicione estas funções no final do arquivo dundie/core.py
 
 from typing import Dict, List, Optional
+
 from sqlmodel import select
-from dundie.models import Person, Movement
+
+from dundie.models import Movement, Person
 from dundie.settings import DATEFMT
 
 

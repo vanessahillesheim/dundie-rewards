@@ -43,6 +43,7 @@ def set_password(email: str, new_password: str) -> bool:
     """Define uma nova senha para o usuário"""
     # Importação LOCAL para evitar circular import
     from sqlmodel import select
+
     from ..database import get_session
     from ..models import Person, User
 
@@ -77,6 +78,7 @@ def user_exists(email: str) -> bool:
     """Verifica se um usuário existe no sistema"""
     # Importação LOCAL para evitar circular import
     from sqlmodel import select
+
     from ..database import get_session
     from ..models import Person
 
@@ -89,6 +91,7 @@ def get_user_by_email(email: str) -> Optional[dict]:
     """Retorna o objeto User pelo email da pessoa"""
     # Importação LOCAL para evitar circular import
     from sqlmodel import select
+
     from ..database import get_session
     from ..models import Person, User
 

@@ -8,9 +8,9 @@ import click
 from sqlmodel import select
 
 from dundie.database import get_session
-from dundie.models import User, Person
-from dundie.utils.user import verify_password
+from dundie.models import Person, User
 from dundie.utils.session import load_session, save_session
+from dundie.utils.user import verify_password
 
 
 def authenticate(email: str, password: str) -> bool:

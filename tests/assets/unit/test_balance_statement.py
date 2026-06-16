@@ -1,7 +1,7 @@
 import pytest
 from sqlmodel import select
 
-from dundie.core import get_balance, get_statement, add
+from dundie.core import add, get_balance, get_statement
 from dundie.database import get_session
 from dundie.models import Movement, Person
 from dundie.utils.db import add_person
