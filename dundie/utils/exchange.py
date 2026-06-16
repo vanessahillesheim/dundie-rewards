@@ -45,17 +45,10 @@ def get_rates(currencies: List[str]) -> Dict[str, USDRate]:
                         return_data[currency] = USDRate(**currency_data)
                     else:
                         # Corrigido: quebra linha longa
-                        log.error(
-                            f"Chave {key} não encontrada no response: "
-                            f"{list(data.keys())}"
-                        )
-                        return_data[currency] = USDRate(
-                            name="api/error", high=0
-                        )
+                        log.error(f"Chave {key} não encontrada no response: " f"{list(data.keys())}")
+                        return_data[currency] = USDRate(name="api/error", high=0)
                 else:
-                    log.error(
-                        f"Erro HTTP {response.status_code} para {currency}"
-                    )
+                    log.error(f"Erro HTTP {response.status_code} para {currency}")
                     return_data[currency] = USDRate(name="api/error", high=0)
 
             except Exception as e:

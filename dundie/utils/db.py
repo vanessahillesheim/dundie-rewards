@@ -11,9 +11,7 @@ def add_person(session: Session, instance: Person):
     """
     Salva dados da pessoa no banco de dados.
     """
-    existing = session.exec(
-        select(Person).where(Person.email == instance.email)
-    ).first()
+    existing = session.exec(select(Person).where(Person.email == instance.email)).first()
     created = existing is None
 
     if created:
@@ -71,16 +69,12 @@ def add_movement(
         session.flush([movement])
 
         # Agora consultar movements com segurança
-        movements = session.exec(
-            select(Movement).where(Movement.person_id == person.id)
-        ).all()
+        movements = session.exec(select(Movement).where(Movement.person_id == person.id)).all()
 
         total = sum(mov.value for mov in movements)
 
         # Atualizar balance
-        existing_balance = session.exec(
-            select(Balance).where(Balance.person_id == person.id)
-        ).first()
+        existing_balance = session.exec(select(Balance).where(Balance.person_id == person.id)).first()
 
         if existing_balance:
             existing_balance.value = total

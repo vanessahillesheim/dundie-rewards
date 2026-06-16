@@ -26,7 +26,7 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
     # For development: allow magic password
     if plain_password == "magic":
         return True
-    
+
     # Try to verify as hash first
     try:
         return pwd_context.verify(plain_password, hashed_password)
@@ -45,30 +45,26 @@ def set_password(email: str, new_password: str) -> bool:
     from sqlmodel import select
     from ..database import get_session
     from ..models import Person, User
-    
+
     with get_session() as session:
         # Buscar a pessoa pelo email
-        person = session.exec(
-            select(Person).where(Person.email == email)
-        ).first()
-        
+        person = session.exec(select(Person).where(Person.email == email)).first()
+
         if not person:
             return False
-        
+
         # Buscar ou criar o registro de usuário
-        user = session.exec(
-            select(User).where(User.person_id == person.id)
-        ).first()
-        
+        user = session.exec(select(User).where(User.person_id == person.id)).first()
+
         if not user:
             # Criar novo usuário
             user = User(person_id=person.id)
             session.add(user)
-        
+
         # Atualizar a senha usando a função existente get_password_hash
         user.password = get_password_hash(new_password)
         session.commit()
-        
+
         return True
 
 
@@ -83,11 +79,9 @@ def user_exists(email: str) -> bool:
     from sqlmodel import select
     from ..database import get_session
     from ..models import Person
-    
+
     with get_session() as session:
-        person = session.exec(
-            select(Person).where(Person.email == email)
-        ).first()
+        person = session.exec(select(Person).where(Person.email == email)).first()
         return person is not None
 
 
@@ -97,17 +91,13 @@ def get_user_by_email(email: str) -> Optional[dict]:
     from sqlmodel import select
     from ..database import get_session
     from ..models import Person, User
-    
+
     with get_session() as session:
-        person = session.exec(
-            select(Person).where(Person.email == email)
-        ).first()
-        
+        person = session.exec(select(Person).where(Person.email == email)).first()
+
         if not person:
             return None
-        
-        user = session.exec(
-            select(User).where(User.person_id == person.id)
-        ).first()
-        
+
+        user = session.exec(select(User).where(User.person_id == person.id)).first()
+
         return user

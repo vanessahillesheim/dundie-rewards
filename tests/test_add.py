@@ -25,14 +25,10 @@ def test_add_movement():
     with get_session() as session:
         # Remove pessoas problemáticas e seus relacionamentos
         for email in problematic_emails:
-            person = session.exec(
-                select(Person).where(Person.email == email)
-            ).first()
+            person = session.exec(select(Person).where(Person.email == email)).first()
             if person:
                 # Remove movimentações
-                movements = session.exec(
-                    select(Movement).where(Movement.person_id == person.id)
-                ).all()
+                movements = session.exec(select(Movement).where(Movement.person_id == person.id)).all()
                 for mov in movements:
                     session.delete(mov)
 
@@ -89,12 +85,8 @@ def test_add_movement():
     # Verifica os resultados
     with get_session() as session:
         # Recupera os balances atualizados
-        joe_person = session.exec(
-            select(Person).where(Person.email == "test_read_joe@doe.com")
-        ).first()
-        jim_person = session.exec(
-            select(Person).where(Person.email == "test_read_jim@doe.com")
-        ).first()
+        joe_person = session.exec(select(Person).where(Person.email == "test_read_joe@doe.com")).first()
+        jim_person = session.exec(select(Person).where(Person.email == "test_read_jim@doe.com")).first()
 
         # Recarrega os balances
         if joe_person.balance:
@@ -117,17 +109,13 @@ def test_add_movement_multiple_people():
         # Limpa dados de teste anteriores
         test_emails = ["test_multi_joe@doe.com", "test_multi_jane@doe.com"]
         for email in test_emails:
-            person = session.exec(
-                select(Person).where(Person.email == email)
-            ).first()
+            person = session.exec(select(Person).where(Person.email == email)).first()
             if person:
                 if person.balance:
                     session.delete(person.balance)
                 if person.user:
                     session.delete(person.user)
-                movements = session.exec(
-                    select(Movement).where(Movement.person_id == person.id)
-                ).all()
+                movements = session.exec(select(Movement).where(Movement.person_id == person.id)).all()
                 for mov in movements:
                     session.delete(mov)
                 session.delete(person)
@@ -166,9 +154,7 @@ def test_add_movement_multiple_people():
     # Verifica
     with get_session() as session:
         for email in ["test_multi_joe@doe.com", "test_multi_jane@doe.com"]:
-            person = session.exec(
-                select(Person).where(Person.email == email)
-            ).first()
+            person = session.exec(select(Person).where(Person.email == email)).first()
             if person.balance:
                 session.refresh(person.balance)
             # Salesman começa com 500 + 100 = 600 pontos
@@ -195,17 +181,13 @@ def test_add_movement_negative_value():
 
     with get_session() as session:
         # Limpa dados anteriores
-        person = session.exec(
-            select(Person).where(Person.email == "test_negative@doe.com")
-        ).first()
+        person = session.exec(select(Person).where(Person.email == "test_negative@doe.com")).first()
         if person:
             if person.balance:
                 session.delete(person.balance)
             if person.user:
                 session.delete(person.user)
-            movements = session.exec(
-                select(Movement).where(Movement.person_id == person.id)
-            ).all()
+            movements = session.exec(select(Movement).where(Movement.person_id == person.id)).all()
             for mov in movements:
                 session.delete(mov)
             session.delete(person)
@@ -230,9 +212,7 @@ def test_add_movement_negative_value():
 
     # Verifica
     with get_session() as session:
-        person = session.exec(
-            select(Person).where(Person.email == "test_negative@doe.com")
-        ).first()
+        person = session.exec(select(Person).where(Person.email == "test_negative@doe.com")).first()
         if person.balance:
             session.refresh(person.balance)
         # Salesman começa com 500 - 50 = 450
@@ -243,29 +223,25 @@ def test_add_movement_negative_value():
 def test_transfer_between_people():
     """Testa transferência de pontos entre pessoas"""
     from dundie.core import transfer
-    
+
     from_email = "test_transfer_joe@doe.com"
     to_email = "test_transfer_jim@doe.com"
-    
+
     # Limpa dados anteriores
     with get_session() as session:
         for email in [from_email, to_email]:
-            person = session.exec(
-                select(Person).where(Person.email == email)
-            ).first()
+            person = session.exec(select(Person).where(Person.email == email)).first()
             if person:
                 if person.balance:
                     session.delete(person.balance)
                 if person.user:
                     session.delete(person.user)
-                movements = session.exec(
-                    select(Movement).where(Movement.person_id == person.id)
-                ).all()
+                movements = session.exec(select(Movement).where(Movement.person_id == person.id)).all()
                 for mov in movements:
                     session.delete(mov)
                 session.delete(person)
         session.commit()
-    
+
     # Cria pessoas
     with get_session() as session:
         # Joe (Salesman - começa com 500)
@@ -279,7 +255,7 @@ def test_transfer_between_people():
         joe = Person(**joe_data)
         person_joe, created_joe = add_person(session, joe)
         assert created_joe is True
-        
+
         # Jim (Manager - começa com 100)
         jim_data = {
             "name": "Jim Transfer",
@@ -291,12 +267,12 @@ def test_transfer_between_people():
         jim = Person(**jim_data)
         person_jim, created_jim = add_person(session, jim)
         assert created_jim is True
-        
+
         session.commit()
-    
+
     # Realiza transferência
     result = transfer(from_email, to_email, 100)
-    
+
     assert result["success"] is True
     assert result["from_balance"] == 400  # 500 - 100
-    assert result["to_balance"] == 200    # 100 + 100
+    assert result["to_balance"] == 200  # 100 + 100

@@ -20,17 +20,13 @@ def test_read_with_query():
 
     with get_session() as session:
         for email in problematic_emails:
-            person = session.exec(
-                select(Person).where(Person.email == email)
-            ).first()
+            person = session.exec(select(Person).where(Person.email == email)).first()
             if person:
                 if person.balance:
                     session.delete(person.balance)
                 if person.user:
                     session.delete(person.user)
-                movements = session.exec(
-                    select(Movement).where(Movement.person_id == person.id)
-                ).all()
+                movements = session.exec(select(Movement).where(Movement.person_id == person.id)).all()
                 for mov in movements:
                     session.delete(mov)
                 session.delete(person)
@@ -75,31 +71,28 @@ def test_read_with_query():
     assert len(response) == 1
     assert response[0]["name"] == "Joe Doe"
 
+
 @pytest.mark.unit
 def test_get_balance():
     """Testa função get_balance"""
     from dundie.core import get_balance
-    
+
     unique_email = "test_balance_read@doe.com"
-    
+
     # Limpa dados anteriores
     with get_session() as session:
-        person = session.exec(
-            select(Person).where(Person.email == unique_email)
-        ).first()
+        person = session.exec(select(Person).where(Person.email == unique_email)).first()
         if person:
             if person.balance:
                 session.delete(person.balance)
             if person.user:
                 session.delete(person.user)
-            movements = session.exec(
-                select(Movement).where(Movement.person_id == person.id)
-            ).all()
+            movements = session.exec(select(Movement).where(Movement.person_id == person.id)).all()
             for mov in movements:
                 session.delete(mov)
             session.delete(person)
         session.commit()
-    
+
     # Cria pessoa
     with get_session() as session:
         person_data = {
@@ -113,7 +106,7 @@ def test_get_balance():
         person, created = add_person(session, person)
         assert created is True
         session.commit()
-    
+
     # Testa get_balance
     result = get_balance(unique_email)
     assert result is not None
@@ -125,27 +118,23 @@ def test_get_balance():
 def test_get_statement():
     """Testa função get_statement"""
     from dundie.core import get_statement, add
-    
+
     unique_email = "test_statement_read@doe.com"
-    
+
     # Limpa dados anteriores
     with get_session() as session:
-        person = session.exec(
-            select(Person).where(Person.email == unique_email)
-        ).first()
+        person = session.exec(select(Person).where(Person.email == unique_email)).first()
         if person:
             if person.balance:
                 session.delete(person.balance)
             if person.user:
                 session.delete(person.user)
-            movements = session.exec(
-                select(Movement).where(Movement.person_id == person.id)
-            ).all()
+            movements = session.exec(select(Movement).where(Movement.person_id == person.id)).all()
             for mov in movements:
                 session.delete(mov)
             session.delete(person)
         session.commit()
-    
+
     # Cria pessoa
     with get_session() as session:
         person_data = {
@@ -159,11 +148,11 @@ def test_get_statement():
         person, created = add_person(session, person)
         assert created is True
         session.commit()
-    
+
     # Adiciona movimentações
     add(100, email=unique_email)
     add(50, email=unique_email)
-    
+
     # Testa get_statement
     movements = get_statement(unique_email, limit=2)
     assert len(movements) == 2

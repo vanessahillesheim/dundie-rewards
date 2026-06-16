@@ -31,17 +31,13 @@ def test_commit_to_database():
 
     # Limpa dados anteriores
     with get_session() as session:
-        person = session.exec(
-            select(Person).where(Person.email == unique_email)
-        ).first()
+        person = session.exec(select(Person).where(Person.email == unique_email)).first()
         if person:
             if person.balance:
                 session.delete(person.balance)
             if person.user:
                 session.delete(person.user)
-            movements = session.exec(
-                select(Movement).where(Movement.person_id == person.id)
-            ).all()
+            movements = session.exec(select(Movement).where(Movement.person_id == person.id)).all()
             for mov in movements:
                 session.delete(mov)
             session.delete(person)
@@ -63,9 +59,7 @@ def test_commit_to_database():
 
     # Verifica se os dados foram salvos
     with get_session() as session:
-        person = session.exec(
-            select(Person).where(Person.email == unique_email)
-        ).first()
+        person = session.exec(select(Person).where(Person.email == unique_email)).first()
         assert person is not None
         assert person.name == "Joe Doe"
         assert person.role == "Salesman"
@@ -79,17 +73,13 @@ def test_add_person_for_the_first_time():
 
     # Limpa dados anteriores
     with get_session() as session:
-        person = session.exec(
-            select(Person).where(Person.email == unique_email)
-        ).first()
+        person = session.exec(select(Person).where(Person.email == unique_email)).first()
         if person:
             if person.balance:
                 session.delete(person.balance)
             if person.user:
                 session.delete(person.user)
-            movements = session.exec(
-                select(Movement).where(Movement.person_id == person.id)
-            ).all()
+            movements = session.exec(select(Movement).where(Movement.person_id == person.id)).all()
             for mov in movements:
                 session.delete(mov)
             session.delete(person)
@@ -111,9 +101,7 @@ def test_add_person_for_the_first_time():
 
     # Verifica se foi criado corretamente
     with get_session() as session:
-        person = session.exec(
-            select(Person).where(Person.email == unique_email)
-        ).first()
+        person = session.exec(select(Person).where(Person.email == unique_email)).first()
         assert person is not None
         assert person.name == "Joe Doe"
         assert person.role == "Salesman"
@@ -124,9 +112,7 @@ def test_add_person_for_the_first_time():
         assert person.balance.value == 500
 
         # Verifica se há movimento registrado
-        movements = session.exec(
-            select(Movement).where(Movement.person_id == person.id)
-        ).all()
+        movements = session.exec(select(Movement).where(Movement.person_id == person.id)).all()
         assert len(movements) > 0
         assert movements[0].value == 500
 
@@ -165,17 +151,13 @@ def test_add_or_remove_points_for_person():
 
     # Limpa dados anteriores
     with get_session() as session:
-        person = session.exec(
-            select(Person).where(Person.email == unique_email)
-        ).first()
+        person = session.exec(select(Person).where(Person.email == unique_email)).first()
         if person:
             if person.balance:
                 session.delete(person.balance)
             if person.user:
                 session.delete(person.user)
-            movements = session.exec(
-                select(Movement).where(Movement.person_id == person.id)
-            ).all()
+            movements = session.exec(select(Movement).where(Movement.person_id == person.id)).all()
             for mov in movements:
                 session.delete(mov)
             session.delete(person)
@@ -197,9 +179,7 @@ def test_add_or_remove_points_for_person():
 
     # PASSO 2: Testa remoção de pontos
     with get_session() as session:
-        person = session.exec(
-            select(Person).where(Person.email == unique_email)
-        ).first()
+        person = session.exec(select(Person).where(Person.email == unique_email)).first()
         initial_balance = person.balance.value  # Deve ser 500
 
         # Remove 100 pontos
@@ -208,9 +188,7 @@ def test_add_or_remove_points_for_person():
 
     # PASSO 3: Verifica
     with get_session() as session:
-        person = session.exec(
-            select(Person).where(Person.email == unique_email)
-        ).first()
+        person = session.exec(select(Person).where(Person.email == unique_email)).first()
         final_balance = person.balance.value
 
         # Assert principal
@@ -221,9 +199,7 @@ def test_add_or_remove_points_for_person():
             assert final_balance == 400
 
         # Verifica se movimento foi registrado
-        movements = session.exec(
-            select(Movement).where(Movement.person_id == person.id)
-        ).all()
+        movements = session.exec(select(Movement).where(Movement.person_id == person.id)).all()
         last_movement = movements[-1]
         assert last_movement.value == -100
         assert last_movement.actor == "manager"

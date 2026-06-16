@@ -10,10 +10,7 @@ SESSION_FILE = Path.home() / ".dundie_session"
 
 def save_session(email: str, password: str):
     """Salva a sessão do usuário em um arquivo"""
-    session_data = {
-        "email": email,
-        "password": password
-    }
+    session_data = {"email": email, "password": password}
     with open(SESSION_FILE, "w") as f:
         json.dump(session_data, f)
     # Também salva nas variáveis de ambiente (para o processo atual)
@@ -26,10 +23,10 @@ def load_session() -> tuple:
     # Primeiro tenta variáveis de ambiente
     email = os.getenv("DUNDIE_USER")
     password = os.getenv("DUNDIE_PASSWORD")
-    
+
     if email and password:
         return email, password
-    
+
     # Se não tiver nas variáveis, tenta o arquivo
     if SESSION_FILE.exists():
         try:
@@ -42,7 +39,7 @@ def load_session() -> tuple:
         except (json.JSONDecodeError, KeyError):
             # Arquivo corrompido, remove
             SESSION_FILE.unlink()
-    
+
     return None, None
 
 

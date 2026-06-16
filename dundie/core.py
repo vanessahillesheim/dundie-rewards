@@ -21,7 +21,7 @@ ResultDict = List[Dict[str, Any]]
 
 def load(filepath: str = None) -> ResultDict:
     """ler as linhas do arquivo e salvar no banco de dados
-    
+
     Se filepath não for fornecido, usa o arquivo padrão em assets/people.csv
     """
     # Define o caminho padrão se nenhum for fornecido
@@ -30,7 +30,7 @@ def load(filepath: str = None) -> ResultDict:
         base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         filepath = os.path.join(base_dir, "assets", "people.csv")
         log.info(f"Nenhum arquivo especificado. Usando arquivo padrão: {filepath}")
-    
+
     try:
         with open(filepath) as file:
             csv_data = csv.reader(file)
@@ -39,9 +39,7 @@ def load(filepath: str = None) -> ResultDict:
 
             with get_session() as session:
                 for line in csv_data:
-                    person_data = dict(
-                        zip(headers, [item.strip() for item in line])
-                    )
+                    person_data = dict(zip(headers, [item.strip() for item in line]))
 
                     instance = Person(**person_data)
                     person, created = add_person(session, instance)
@@ -111,7 +109,7 @@ def read(**query: Query) -> ResultDict:
             if person.movement:
                 # person.movement pode ser uma lista de movimentos
                 # Vamos verificar se é lista ou objeto único
-                if hasattr(person.movement, '__iter__') and not isinstance(person.movement, str):
+                if hasattr(person.movement, "__iter__") and not isinstance(person.movement, str):
                     # É uma lista, pega o mais recente
                     movements_list = list(person.movement)
                     if movements_list:
@@ -133,11 +131,7 @@ def read(**query: Query) -> ResultDict:
                 "currency": person.currency,
                 "balance": balance_value,  # Inteiro
                 "total_usd": round(total_usd, 2),  # Decimal com 2 casas
-                "last_movement": (
-                    last_movement_date.strftime(DATEFMT)
-                    if last_movement_date
-                    else None
-                ),
+                "last_movement": (last_movement_date.strftime(DATEFMT) if last_movement_date else None),
             }
             return_data.append(person_data)
 
@@ -155,11 +149,10 @@ def add(value: int, **query: Query):
     with get_session() as session:
         user = os.getenv("USER")
         for person in people:
-            instance = session.exec(
-                select(Person).where(Person.email == person["email"])
-            ).first()
+            instance = session.exec(select(Person).where(Person.email == person["email"])).first()
             add_movement(session, instance, value, user)
         session.commit()
+
 
 # Adicione estas funções no final do arquivo dundie/core.py
 
@@ -173,84 +166,73 @@ def transfer(from_user: str, to_email: str, value: int) -> Dict:
     """Transfere pontos de um usuário para outro"""
     if value <= 0:
         return {"success": False, "error": "Value must be positive"}
-    
+
     with get_session() as session:
         # Buscar usuários
-        from_person = session.exec(
-            select(Person).where(Person.email == from_user)
-        ).first()
-        
-        to_person = session.exec(
-            select(Person).where(Person.email == to_email)
-        ).first()
-        
+        from_person = session.exec(select(Person).where(Person.email == from_user)).first()
+
+        to_person = session.exec(select(Person).where(Person.email == to_email)).first()
+
         if not from_person:
             return {"success": False, "error": "Sender not found"}
-        
+
         if not to_person:
             return {"success": False, "error": "Recipient not found"}
-        
+
         # Verificar saldo
         if not from_person.balance or from_person.balance.value < value:
             return {"success": False, "error": "Insufficient balance"}
-        
+
         # Registrar movimentações
         add_movement(session, from_person, -value, actor=from_user)
         add_movement(session, to_person, value, actor=from_user)
-        
+
         session.commit()
-        
+
         # Atualizar saldos - forçar refresh
         session.refresh(from_person)
         session.refresh(to_person)
-        
+
         return {
             "success": True,
-            "from_balance": from_person.balance.value if from_person.balance else 0,
-            "to_balance": to_person.balance.value if to_person.balance else 0
+            "from_balance": (from_person.balance.value if from_person.balance else 0),
+            "to_balance": to_person.balance.value if to_person.balance else 0,
         }
 
 
 def get_balance(email: str) -> Optional[Dict]:
     """Retorna o saldo do usuário"""
     with get_session() as session:
-        person = session.exec(
-            select(Person).where(Person.email == email)
-        ).first()
-        
+        person = session.exec(select(Person).where(Person.email == email)).first()
+
         if not person:
             return None
-        
+
         return {
             "name": person.name,
-            "balance": int(person.balance.value) if person.balance else 0,  # Garantir inteiro
-            "currency": person.currency
+            "balance": (int(person.balance.value) if person.balance else 0),  # Garantir inteiro
+            "currency": person.currency,
         }
 
 
 def get_statement(email: str, limit: int = 10) -> List[Dict]:
     """Retorna o extrato de movimentações"""
     with get_session() as session:
-        person = session.exec(
-            select(Person).where(Person.email == email)
-        ).first()
-        
+        person = session.exec(select(Person).where(Person.email == email)).first()
+
         if not person:
             return []
-        
+
         # Buscar movimentos diretamente pela query em vez do relacionamento
         movements = session.exec(
-            select(Movement)
-            .where(Movement.person_id == person.id)
-            .order_by(Movement.date.desc())
-            .limit(limit)
+            select(Movement).where(Movement.person_id == person.id).order_by(Movement.date.desc()).limit(limit)
         ).all()
-        
+
         return [
             {
                 "date": mov.date.strftime(DATEFMT),
                 "value": mov.value,
-                "actor": mov.actor
+                "actor": mov.actor,
             }
             for mov in movements
         ]

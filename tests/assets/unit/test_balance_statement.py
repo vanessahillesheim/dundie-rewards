@@ -11,25 +11,21 @@ from dundie.utils.db import add_person
 def test_get_balance_success():
     """Testa obtenção de saldo com sucesso"""
     unique_email = "test_balance_success@dundie.com"
-    
+
     with get_session() as session:
         # Limpa dados anteriores
-        person = session.exec(
-            select(Person).where(Person.email == unique_email)
-        ).first()
+        person = session.exec(select(Person).where(Person.email == unique_email)).first()
         if person:
             if person.balance:
                 session.delete(person.balance)
             if person.user:
                 session.delete(person.user)
-            movements = session.exec(
-                select(Movement).where(Movement.person_id == person.id)
-            ).all()
+            movements = session.exec(select(Movement).where(Movement.person_id == person.id)).all()
             for mov in movements:
                 session.delete(mov)
             session.delete(person)
         session.commit()
-    
+
     # Cria pessoa
     with get_session() as session:
         person = Person(
@@ -37,15 +33,15 @@ def test_get_balance_success():
             dept="Sales",
             role="Salesman",
             email=unique_email,
-            currency="USD"
+            currency="USD",
         )
         person, created = add_person(session, person)
         assert created is True
         session.commit()
-    
+
     # Obtém saldo
     result = get_balance(unique_email)
-    
+
     assert result is not None
     assert result["name"] == "Balance Test"
     assert result["balance"] == 500  # Salesman começa com 500
@@ -63,25 +59,21 @@ def test_get_balance_user_not_found():
 def test_get_statement_success():
     """Testa obtenção de extrato com sucesso"""
     unique_email = "test_statement_success@dundie.com"
-    
+
     with get_session() as session:
         # Limpa dados anteriores
-        person = session.exec(
-            select(Person).where(Person.email == unique_email)
-        ).first()
+        person = session.exec(select(Person).where(Person.email == unique_email)).first()
         if person:
             if person.balance:
                 session.delete(person.balance)
             if person.user:
                 session.delete(person.user)
-            movements = session.exec(
-                select(Movement).where(Movement.person_id == person.id)
-            ).all()
+            movements = session.exec(select(Movement).where(Movement.person_id == person.id)).all()
             for mov in movements:
                 session.delete(mov)
             session.delete(person)
         session.commit()
-    
+
     # Cria pessoa e faz movimentações
     with get_session() as session:
         person = Person(
@@ -89,20 +81,20 @@ def test_get_statement_success():
             dept="Sales",
             role="Salesman",
             email=unique_email,
-            currency="USD"
+            currency="USD",
         )
         person, created = add_person(session, person)
         assert created is True
         session.commit()
-    
+
     # Adiciona algumas movimentações
     add(100, email=unique_email)
     add(50, email=unique_email)
     add(-30, email=unique_email)
-    
+
     # Obtém extrato
     movements = get_statement(unique_email, limit=3)
-    
+
     assert len(movements) == 3
     for mov in movements:
         assert "date" in mov
@@ -114,25 +106,21 @@ def test_get_statement_success():
 def test_get_statement_with_limit():
     """Testa obtenção de extrato com limite"""
     unique_email = "test_statement_limit@dundie.com"
-    
+
     with get_session() as session:
         # Limpa dados anteriores
-        person = session.exec(
-            select(Person).where(Person.email == unique_email)
-        ).first()
+        person = session.exec(select(Person).where(Person.email == unique_email)).first()
         if person:
             if person.balance:
                 session.delete(person.balance)
             if person.user:
                 session.delete(person.user)
-            movements = session.exec(
-                select(Movement).where(Movement.person_id == person.id)
-            ).all()
+            movements = session.exec(select(Movement).where(Movement.person_id == person.id)).all()
             for mov in movements:
                 session.delete(mov)
             session.delete(person)
         session.commit()
-    
+
     # Cria pessoa
     with get_session() as session:
         person = Person(
@@ -140,19 +128,19 @@ def test_get_statement_with_limit():
             dept="Sales",
             role="Salesman",
             email=unique_email,
-            currency="USD"
+            currency="USD",
         )
         person, created = add_person(session, person)
         assert created is True
         session.commit()
-    
+
     # Adiciona várias movimentações
     for i in range(5):
         add(10, email=unique_email)
-    
+
     # Obtém extrato com limite de 3
     movements = get_statement(unique_email, limit=3)
-    
+
     assert len(movements) == 3
 
 

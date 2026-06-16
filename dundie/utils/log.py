@@ -5,10 +5,7 @@ from typing import Union
 
 LOG_LEVEL = os.getenv("LOG_LEVEL", "WARNING").upper()
 log = logging.getLogger("dundie")
-fmt = logging.Formatter(
-    "%(asctime)s  %(name)s  %(levelname)s "
-    "l:%(lineno)d f:%(filename)s: %(message)s"
-)
+fmt = logging.Formatter("%(asctime)s  %(name)s  %(levelname)s " "l:%(lineno)d f:%(filename)s: %(message)s")
 
 
 def get_logger(
