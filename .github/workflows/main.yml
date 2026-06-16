@@ -1,13 +1,12 @@
 name: CI
 
-on: 
+on:
   push:
     branches:
       - "main"
   pull_request:
     branches:
       - "main"
-
   workflow_dispatch:
 
 jobs:
@@ -16,20 +15,37 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        python-version: ['3.10']
-        os: [ubuntu-latest]  # Só ubuntu por enquanto
-    runs-on: ${{matrix.os}}
+        python-version: ['3.10', '3.11', '3.12']
+        os: [ubuntu-latest]
+    runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
+      # ATUALIZADO: checkout@v4 (era v2)
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # ATUALIZADO: setup-python@v5 (era v2)
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
         with:
-          python-version: ${{matrix.python-version}}
-      - name: Install Project 
+          python-version: ${{ matrix.python-version }}
+
+      - name: Cache pip packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('pyproject.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Install Project
         run: pip install '.[test,dev]'
+
       - name: Look for styles errors
         run: flake8
-      - name: check for importing style
+
+      - name: Check for importing style
         run: isort --profile=black --check --diff dundie tests integration
+
       - name: Look for auto format errors
         run: black --check --diff dundie tests integration
 
@@ -39,15 +55,36 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ['3.9', '3.10']
-        os: [ubuntu-latest]  # Só ubuntu por enquanto
-    runs-on: ${{matrix.os}}
+        python-version: ['3.10', '3.11', '3.12']
+        os: [ubuntu-latest]
+    runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
+      # ATUALIZADO: checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # ATUALIZADO: setup-python@v5
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
         with:
-          python-version: ${{matrix.python-version}}
-      - name: Install Project 
+          python-version: ${{ matrix.python-version }}
+
+      - name: Cache pip packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('pyproject.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Install Project
         run: pip install '.[test]'
-      - name: Run tests 
+
+      - name: Run tests
         run: pytest -vv tests integration
+
+      - name: Upload coverage to Codecov (opcional)
+        uses: codecov/codecov-action@v4
+        with:
+          file: ./coverage.xml
+          fail_ci_if_error: false
