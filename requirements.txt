@@ -6,3 +6,5 @@ pydantic
 sqlmodel
 alembic
 httpx
+python-dotenv
+argon2-cffi

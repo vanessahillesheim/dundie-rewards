@@ -237,3 +237,66 @@ def test_add_movement_negative_value():
             session.refresh(person.balance)
         # Salesman começa com 500 - 50 = 450
         assert person.balance.value == 450
+
+
+@pytest.mark.unit
+def test_transfer_between_people():
+    """Testa transferência de pontos entre pessoas"""
+    from dundie.core import transfer
+    
+    from_email = "test_transfer_joe@doe.com"
+    to_email = "test_transfer_jim@doe.com"
+    
+    # Limpa dados anteriores
+    with get_session() as session:
+        for email in [from_email, to_email]:
+            person = session.exec(
+                select(Person).where(Person.email == email)
+            ).first()
+            if person:
+                if person.balance:
+                    session.delete(person.balance)
+                if person.user:
+                    session.delete(person.user)
+                movements = session.exec(
+                    select(Movement).where(Movement.person_id == person.id)
+                ).all()
+                for mov in movements:
+                    session.delete(mov)
+                session.delete(person)
+        session.commit()
+    
+    # Cria pessoas
+    with get_session() as session:
+        # Joe (Salesman - começa com 500)
+        joe_data = {
+            "name": "Joe Transfer",
+            "dept": "Sales",
+            "role": "Salesman",
+            "email": from_email,
+            "currency": "USD",
+        }
+        joe = Person(**joe_data)
+        person_joe, created_joe = add_person(session, joe)
+        assert created_joe is True
+        
+        # Jim (Manager - começa com 100)
+        jim_data = {
+            "name": "Jim Transfer",
+            "dept": "Management",
+            "role": "Manager",
+            "email": to_email,
+            "currency": "USD",
+        }
+        jim = Person(**jim_data)
+        person_jim, created_jim = add_person(session, jim)
+        assert created_jim is True
+        
+        session.commit()
+    
+    # Realiza transferência
+    result = transfer(from_email, to_email, 100)
+    
+    assert result["success"] is True
+    assert result["from_balance"] == 400  # 500 - 100
+    assert result["to_balance"] == 200    # 100 + 100

@@ -24,7 +24,7 @@ class Person(SQLModel, table=True):
     currency: str = Field(default="USD")
 
     balance: "Balance" = Relationship(back_populates="person")
-    movement: "Movement" = Relationship(back_populates="person")
+    movement: list["Movement"] = Relationship(back_populates="person")
     user: "User" = Relationship(back_populates="person")
 
     model_config = ConfigDict(from_attributes=True)
