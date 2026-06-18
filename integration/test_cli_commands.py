@@ -26,9 +26,7 @@ def authenticated_user():
                 session.delete(person.balance)
             if person.user:
                 session.delete(person.user)
-            movements = session.exec(
-                select(Movement).where(Movement.person_id == person.id)
-            ).all()
+            movements = session.exec(select(Movement).where(Movement.person_id == person.id)).all()
             for mov in movements:
                 session.delete(mov)
             session.delete(person)
@@ -48,6 +46,7 @@ def authenticated_user():
 
     # Define senha
     from dundie.utils.user import set_password
+
     set_password(email, "test123")
 
     # Salva credenciais no ambiente para o CLI
@@ -84,9 +83,7 @@ def test_show_command_for_other_user(authenticated_user):
                 session.delete(person.balance)
             if person.user:
                 session.delete(person.user)
-            movements = session.exec(
-                select(Movement).where(Movement.person_id == person.id)
-            ).all()
+            movements = session.exec(select(Movement).where(Movement.person_id == person.id)).all()
             for mov in movements:
                 session.delete(mov)
             session.delete(person)
