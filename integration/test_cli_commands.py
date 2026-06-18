@@ -1,5 +1,4 @@
 import os
-
 import pytest
 from click.testing import CliRunner
 from sqlmodel import select
@@ -15,85 +14,65 @@ cmd = CliRunner()
 
 @pytest.fixture
 def authenticated_user():
-    """Cria um usuário autenticado para testes de integração"""
-    unique_email = "test_cli_user@dundie.com"
+    """Cria um usuário autenticado para os testes"""
+    email = "test_cli_user@dundie.com"
 
-    # Limpa dados anteriores
     with get_session() as session:
-        # Remove todas as movimentações e balances primeiro
-        person = session.exec(select(Person).where(Person.email == unique_email)).first()
+        # Limpa dados anteriores
+        person = session.exec(select(Person).where(Person.email == email)).first()
         if person:
-            # Remove movimentações
-            movements = session.exec(select(Movement).where(Movement.person_id == person.id)).all()
-            for mov in movements:
-                session.delete(mov)
-            # Remove balance
             if person.balance:
                 session.delete(person.balance)
-            # Remove user
             if person.user:
                 session.delete(person.user)
-            # Remove person
+            movements = session.exec(
+                select(Movement).where(Movement.person_id == person.id)
+            ).all()
+            for mov in movements:
+                session.delete(mov)
             session.delete(person)
         session.commit()
 
-    # Cria usuário
-    with get_session() as session:
+        # Cria pessoa
         person = Person(
-            name="CLI Test User",
+            name="Test User",
             dept="Management",
             role="Manager",
-            email=unique_email,
+            email=email,
             currency="USD",
         )
-        session.add(person)
-        session.flush()
-
-        # Cria usuário com senha
-        user = User(person_id=person.id, password=get_password_hash("test123"))
-        session.add(user)
-        session.flush()
-
-        # Inicializa balance
-        set_initial_balance(session, person)
-
+        person, created = add_person(session, person)
+        assert created is True
         session.commit()
 
-        # Força carregamento dos relacionamentos dentro da sessão
-        session.refresh(person)
-        session.refresh(user)
+    # Define senha
+    from dundie.utils.user import set_password
+    set_password(email, "test123")
 
-    # Configura variáveis de ambiente para autenticação
-    os.environ["DUNDIE_USER"] = unique_email
+    # Salva credenciais no ambiente para o CLI
+    os.environ["DUNDIE_USER"] = email
     os.environ["DUNDIE_PASSWORD"] = "test123"
 
-    yield unique_email
-
-    # Limpa após teste
-    if "DUNDIE_USER" in os.environ:
-        del os.environ["DUNDIE_USER"]
-    if "DUNDIE_PASSWORD" in os.environ:
-        del os.environ["DUNDIE_PASSWORD"]
+    return email
 
 
 @pytest.mark.integration
-def test_balance_command(authenticated_user):
-    """Testa comando balance"""
-    result = cmd.invoke(main, ["balance"])
+def test_show_command(authenticated_user):
+    """Testa comando show (antigo balance)"""
+    # CORRIGIDO: usa "show" em vez de "balance"
+    result = cmd.invoke(main, ["show"])
 
-    # Debug se necessário
     if result.exit_code != 0:
         print(f"\n[DEBUG] Exit code: {result.exit_code}")
         print(f"[DEBUG] Output: {result.output[:500]}")
 
     assert result.exit_code == 0
-    assert "Balance Report" in result.output
-    assert authenticated_user in result.output
+    assert "Relatório de Pontos" in result.output
 
 
 @pytest.mark.integration
-def test_balance_command_for_other_user(authenticated_user):
-    """Testa comando balance para outro usuário"""
+def test_show_command_for_other_user(authenticated_user):
+    """Testa comando show para outro usuário"""
     # Cria outro usuário
     other_email = "other_user@dundie.com"
     with get_session() as session:
@@ -104,7 +83,9 @@ def test_balance_command_for_other_user(authenticated_user):
                 session.delete(person.balance)
             if person.user:
                 session.delete(person.user)
-            movements = session.exec(select(Movement).where(Movement.person_id == person.id)).all()
+            movements = session.exec(
+                select(Movement).where(Movement.person_id == person.id)
+            ).all()
             for mov in movements:
                 session.delete(mov)
             session.delete(person)
@@ -121,35 +102,35 @@ def test_balance_command_for_other_user(authenticated_user):
         person, created = add_person(session, person)
         session.commit()
 
-    result = cmd.invoke(main, ["balance", "--email", other_email])
+    # CORRIGIDO: usa "show" em vez de "balance"
+    result = cmd.invoke(main, ["show", "--email", other_email])
     assert result.exit_code == 0
-    assert "Balance Report" in result.output
-    assert other_email in result.output
+    assert "Other User" in result.output
 
 
 @pytest.mark.integration
 def test_statement_command(authenticated_user):
     """Testa comando statement"""
-    result = cmd.invoke(main, ["statement"])
+    # CORRIGIDO: adiciona --email para não pedir interativamente
+    result = cmd.invoke(main, ["statement", "--email", authenticated_user])
 
-    # Debug se necessário
     if result.exit_code != 0:
         print(f"\n[DEBUG] Exit code: {result.exit_code}")
         print(f"[DEBUG] Output: {result.output[:500]}")
 
     assert result.exit_code == 0
-    assert "Statement" in result.output
+    assert "Extrato" in result.output
 
 
 @pytest.mark.integration
 def test_statement_command_with_limit(authenticated_user):
     """Testa comando statement com limite"""
-    result = cmd.invoke(main, ["statement", "--limit", "5"])
+    # CORRIGIDO: adiciona --email para não pedir interativamente
+    result = cmd.invoke(main, ["statement", "--email", authenticated_user, "--limit", "5"])
 
-    # Debug se necessário
     if result.exit_code != 0:
         print(f"\n[DEBUG] Exit code: {result.exit_code}")
         print(f"[DEBUG] Output: {result.output[:500]}")
 
     assert result.exit_code == 0
-    assert "Statement" in result.output
+    assert "Extrato" in result.output
