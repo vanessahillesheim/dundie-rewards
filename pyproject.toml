@@ -19,6 +19,7 @@ dependencies = [
     "click>=8.0.0",
     "rich>=13.0.0",
     "sqlmodel>=0.0.8",
+    "httpx>=0.24.0",  # ADICIONADO
 ]
 requires-python = ">=3.8"
 
@@ -34,6 +35,7 @@ test = [
     "pytest>=6.0",
     "pytest-xdist>=3.0",
     "pytest-forked>=1.6",
+    "httpx>=0.24.0",  # ADICIONADO
 ]
 
 [project.scripts]
@@ -70,21 +72,21 @@ exclude = [
     "integration",
     "tests/assets/unit",
 ]
-max-line-length = 120  # AUMENTADO DE 79 PARA 120
+max-line-length = 120
 ignore = [
-    "E402",    # module level import not at top of file
-    "F401",    # imported but unused
-    "F841",    # local variable assigned but never used
-    "F541",    # f-string is missing placeholders
-    "W292",    # no newline at end of file
-    "W293",    # blank line contains whitespace
-    "F811",    # redefinition of unused
-    "E501",    # line too long (já coberto pelo max-line-length)
+    "E402",
+    "F401",
+    "F841",
+    "F541",
+    "W292",
+    "W293",
+    "F811",
+    "E501",
 ]
 
 # CONFIGURAÇÕES DO BLACK - ATUALIZADAS
 [tool.black]
-line-length = 120  # AUMENTADO DE 79 PARA 120
+line-length = 120
 target-version = ["py38", "py39", "py310", "py311"]
 exclude = '''
 /(
@@ -104,5 +106,5 @@ exclude = '''
 profile = "black"
 src_paths = ["dundie", "tests", "integration"]
 multi_line_output = 3
-line_length = 120  # ADICIONADO
+line_length = 120
 skip_glob = ["migrations/*", "scripts/*"]
